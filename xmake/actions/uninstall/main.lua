@@ -47,6 +47,8 @@ function main()
             -- failed or not permission? request administrator permission and uninstall it again
             function (errors)
 
+                print("Retrying with administrator permission...")
+
                 -- try get privilege
                 if privilege.get() then
                     local ok = try
@@ -70,12 +72,10 @@ function main()
                 if sudo.has() and option.get("admin") then
 
                     -- uninstall target with administrator permission
-                    for _, pattern in ipairs(group_pattern or {""}) do
-                        sudo.execl(path.join(os.scriptdir(), "uninstall_admin.lua"), {
-                            targetname or "__all", pattern,
-                            option.get("installdir") or "",
-                            option.get("prefix")})
-                    end
+                    sudo.execl(path.join(os.scriptdir(), "uninstall_admin.lua"), {
+                        targetname or "__all",
+                        option.get("installdir") or "",
+                        option.get("prefix") or "", table.unpack(group_pattern or {})})
 
                     -- trace
                     cprint("${color.success}uninstall ok!")

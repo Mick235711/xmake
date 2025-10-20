@@ -85,6 +85,8 @@ function main()
             -- failed or not permission? request administrator permission and install it again
             function (errors)
 
+                print("Retrying with administrator permission...")
+
                 -- try get privilege
                 if privilege.get() then
                     local ok = try
@@ -108,12 +110,10 @@ function main()
                 if sudo.has() and option.get("admin") then
 
                     -- install target with administrator permission
-                    for _, pattern in ipairs(group_pattern or {""}) do
-                        sudo.execl(path.join(os.scriptdir(), "install_admin.lua"), {
-                            targetname or (option.get("all") and "__all" or "__def"),
-                            pattern, option.get("installdir") or "",
-                            option.get("prefix")})
-                    end
+                    sudo.execl(path.join(os.scriptdir(), "install_admin.lua"), {
+                        targetname or (option.get("all") and "__all" or "__def"),
+                        option.get("installdir") or "",
+                        option.get("prefix") or "", table.unpack(group_pattern or {})})
                     cprint("${color.success}install ok!")
                     ok = true
                 end
